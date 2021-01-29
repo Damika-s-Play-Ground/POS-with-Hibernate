@@ -45,7 +45,7 @@ public class ItemServlet extends HttpServlet {
             String code = req.getPathInfo().replace("/", "");
 
             ItemBO itemBO = BOFactory.getInstance().getBO(BOTypes.ITEM);
-            itemBO.setSession(session);
+            itemBO.setEntityManager(session);
             itemBO.deleteItem(code);
             resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
 
@@ -74,7 +74,7 @@ public class ItemServlet extends HttpServlet {
             }
 
             ItemBO itemBO = BOFactory.getInstance().getBO(BOTypes.ITEM);
-            itemBO.setSession(session);
+            itemBO.setEntityManager(session);
             itemBO.updateItem(dto);
             resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
 
@@ -93,7 +93,7 @@ public class ItemServlet extends HttpServlet {
         try (Session session = sf.openSession()) {
             resp.setContentType("application/json");
             ItemBO itemBO = BOFactory.getInstance().getBO(BOTypes.ITEM);
-            itemBO.setSession(session);
+            itemBO.setEntityManager(session);
             resp.getWriter().println(jsonb.toJson(itemBO.findAllItems()));
 
         } catch (Throwable t) {
@@ -114,7 +114,7 @@ public class ItemServlet extends HttpServlet {
             }
 
             ItemBO itemBO = BOFactory.getInstance().getBO(BOTypes.ITEM);
-            itemBO.setSession(session);
+            itemBO.setEntityManager(session);
             itemBO.saveItem(dto);
             resp.setStatus(HttpServletResponse.SC_CREATED);
             resp.setContentType("application/json");

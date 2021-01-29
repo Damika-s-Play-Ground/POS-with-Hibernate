@@ -45,7 +45,7 @@ public class OrderServlet extends HttpServlet {
             }
 
             OrderBO orderBO = BOFactory.getInstance().getBO(BOTypes.ORDER);
-            orderBO.setSession(session);
+            orderBO.setEntityManager(session);
             orderBO.placeOrder(dto);
             resp.setStatus(HttpServletResponse.SC_CREATED);
         } catch (SQLIntegrityConstraintViolationException exp) {

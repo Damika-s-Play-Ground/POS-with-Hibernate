@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -38,9 +40,9 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        final SessionFactory sf = (SessionFactory) getServletContext().getAttribute("sf");
+        final EntityManagerFactory emf = (EntityManagerFactory) getServletContext().getAttribute("sf");
 
-        try (Session session = sf.openSession()) {
+        try (EntityManager entityManager = emf.createEntityManager().unwrap()) {
 
             if (req.getPathInfo() == null || req.getPathInfo().replace("/", "").trim().isEmpty()) {
                 throw new HttpResponseException(400, "Invalid customer id", null);
@@ -49,7 +51,7 @@ public class CustomerServlet extends HttpServlet {
             String id = req.getPathInfo().replace("/", "");
 
             CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
-            customerBO.setSession(session);
+            customerBO.setEntityManager(entityManager);
             resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
 
         } catch (Exception e) {
@@ -77,7 +79,7 @@ public class CustomerServlet extends HttpServlet {
             }
 
             CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
-            customerBO.setSession(session);
+            customerBO.setEntityManager(session);
             customerBO.updateCustomer(dto);
             resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
 
@@ -97,7 +99,7 @@ public class CustomerServlet extends HttpServlet {
         try (Session session = sf.openSession()) {
             resp.setContentType("application/json");
             CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
-            customerBO.setSession(session);
+            customerBO.setEntityManager(session);
             resp.getWriter().println(jsonb.toJson(customerBO.findAllCustomers()));
 
         } catch (Throwable t) {
@@ -118,7 +120,7 @@ public class CustomerServlet extends HttpServlet {
             }
 
             CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
-            customerBO.setSession(session);
+            customerBO.setEntityManager(session);
             customerBO.saveCustomer(dto);
             resp.setStatus(HttpServletResponse.SC_CREATED);
             resp.setContentType("application/json");
