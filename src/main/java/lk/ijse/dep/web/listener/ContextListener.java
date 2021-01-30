@@ -4,6 +4,7 @@ import lk.ijse.dep.web.util.HibernateUtil;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -16,7 +17,7 @@ import java.util.logging.*;
 
 @WebListener
 public class ContextListener implements ServletContextListener {
-
+    EntityManagerFactory emf =null;
     org.slf4j.Logger logger = LoggerFactory.getLogger(ContextListener.class);
 
     public ContextListener() {
@@ -27,10 +28,11 @@ public class ContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
 
         Properties prop = new Properties();
+        emf = Persistence.createEntityManagerFactory("dep-6",prop);
         try {
             logger.info("Entity Manager factory is being initialized");
             prop.load(ContextListener.class.getResourceAsStream("/application.properties"));
-            sce.getServletContext().setAttribute("emf", Persistence.createEntityManagerFactory("dep-6",prop));
+            sce.getServletContext().setAttribute("emf",emf);
 
 //            Properties properties = System.getProperties();
 //            for (Object o : properties.keySet()) {
@@ -56,7 +58,7 @@ public class ContextListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        HibernateUtil.getSessionFactory().close();
+        emf.close();
         logger.info("Session factory is being shut down");
     }
 }
