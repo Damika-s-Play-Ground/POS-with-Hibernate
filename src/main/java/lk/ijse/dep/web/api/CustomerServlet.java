@@ -42,8 +42,8 @@ public class CustomerServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         final EntityManagerFactory emf = (EntityManagerFactory) getServletContext().getAttribute("sf");
 
-        try (EntityManager entityManager = emf.createEntityManager().unwrap()) {
-
+        try {
+            EntityManager entityManager = emf.createEntityManager().unwrap();
             if (req.getPathInfo() == null || req.getPathInfo().replace("/", "").trim().isEmpty()) {
                 throw new HttpResponseException(400, "Invalid customer id", null);
             }
